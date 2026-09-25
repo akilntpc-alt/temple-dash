@@ -1,0 +1,23 @@
+name: Deploy game file
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download game file
+        run: |
+          curl -sL "https://github.com/akilntpc-alt/temple-dash/releases/download/game-file/index.html" -o index.html
+          ls -la index.html
+      - name: Apply coins patch
+        run: python3 patch.py
+      - name: Commit game file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Update game file (index.html)" || echo "no changes"
+          git push
